@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.RenderType;
  *
  * 目前只有 ImmediatelyFast 的 BatchingBuffers\$WrappedRenderLayer（见 IfWrappedRenderLayerMixin）。
  *
- * 背景（L1 报告 §1/§2 R1，H:\mod\ar-force-mobile\investigation\L-leak\L1-AR-cache.md）：
+ * 背景（AR × ImmediatelyFast 的 LayerKey 泄漏归因）：
  * AR 的 AcceleratedBufferSource.activeBuilders 与 AcceleratedRingBuffers\$Buffers.builders
  * 以 LayerKey(layer, renderType) 为键，而 LayerKey 是 record、equals/hashCode 委托给 renderType；
  * IF 每次 HudBatchingBufferSource.getBuffer 都新建 wrapper（+2 个捕获 lambda），AR 注入的
