@@ -1,0 +1,38 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+
+[[mods]]
+modId = "arforcemobile"
+version = "${jar_version}"
+displayName = "AR Force Mobile"
+description = "Experimental v1.2.1: Mobile-only AR adjustments for MobileGLues / gl4es / LTW. Auto-detect mobile; desktop stays untouched; mobile hot-injects force_translucent_acceleration=DISABLED with Sodium/Embeddium and debug_context=DISABLED; diagnostics are opt-in."
+authors = "arforcemobile"
+
+[[mixins]]
+config = "arforcemobile.mixins.json"
+
+# L3：AR x ImmediatelyFast 泄漏修复（targets 字符串 + required:false，IF/AR 缺失时静默跳过）
+[[mixins]]
+config = "arforcemobile.immediatelyfast.mixins.json"
+
+[[dependencies.arforcemobile]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.22)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.arforcemobile]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.0,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.arforcemobile]]
+modId = "acceleratedrendering"
+type = "optional"
+versionRange = "[1.0.0,)"
+ordering = "NONE"
+side = "CLIENT"

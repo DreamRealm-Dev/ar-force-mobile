@@ -1,0 +1,14 @@
+{
+  "required": false,
+  "minVersion": "0.8.5",
+  "package": "com.arforcemobile.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "IfWrappedRenderLayerMixin",
+    "IfLayerKeyCanonicalizeMixin",
+    "IfWrapperLeakWatchMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

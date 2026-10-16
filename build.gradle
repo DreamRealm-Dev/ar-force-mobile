@@ -1,0 +1,68 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.134'
+}
+
+// 版本号来源：gradle.properties 的 mod_version（缺省时回退到下面这个字面量，保持旧行为）。
+version = project.findProperty("mod_version") ?: "1.3.28"
+group = "com.arforcemobile"
+
+base {
+    archivesName = "ar-force-mobile"
+}
+
+repositories {
+    // 本地构件仓库：parchment 已用 curl 预取到 local-maven，
+    // 规避 Gradle JVM 访问 maven.neoforged.net 时 TLS 连接被重置的问题。
+    maven { url = uri("local-maven") }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+neoForge {
+    version = "21.1.111"
+    parchment {
+        mappingsVersion = "2024.11.17"
+        minecraftVersion = "1.21.1"
+    }
+    runs {
+        create("client") {
+            client()
+        }
+    }
+    mods {
+        create("arforcemobile") {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+dependencies {
+    compileOnly("net.neoforged:neoforge:21.1.111")
+    // AR 1.0.14 本体,仅编译期引用其类(BaseVertex 合批层需要)
+    compileOnly(files("libs/acceleratedrendering-1.0.14-1.21.1-alpha.jar"))
+    // Flywheel 1.0.6 仅编译期引用(SectionCollector 接口);运行时由 Create 6.0.10 JarJar 内嵌提供
+    compileOnly(files("libs/flywheel-neoforge-1.21.1-1.0.6.jar"))
+    // Sodium 0.8.13 仅编译期引用(1.3.26 W3 归因器需要 SodiumWorldRenderer#setupTerrain/drawChunkLayer
+    // 的精确签名);运行时 Sodium 仍是可选依赖——mixin 用 targets 字符串 + required:false，Sodium 不在时静默跳过
+    compileOnly(files("libs/sodium-neoforge-0.8.13-dev-only.jar"))
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+}
+
+// K1 根治：neoforge.mods.toml 的版本号从 build.gradle 同步展开，
+// 避免手改 toml 被遗忘（日志首行版本号曾是写死的 1.2.2 谎言）。
+tasks.processResources {
+    // 版本号作为任务输入显式声明：否则改 build.gradle 的 version 时 processResources
+    // 会被判 UP-TO-DATE，jar 里的 neoforge.mods.toml 仍写着旧版本号（1.3.16 构建时实测踩到）。
+    inputs.property("jar_version", project.version)
+    filesMatching("META-INF/neoforge.mods.toml") {
+        expand("jar_version": project.version)
+    }
+}
